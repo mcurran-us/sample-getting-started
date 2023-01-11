@@ -64,7 +64,7 @@ static-scan:
        sonar.c.file.suffixes=-
        sonar.cpp.file.suffixes=-
        sonar.objc.file.suffixes=-
-       EOF
+    EOF
        chmod -x "$WORKSPACE"/liberty-getting-started/sonar-project.properties
        "${ONE_PIPELINE_PATH}"/internal/sonarqube/sonarqube_run
     fi
