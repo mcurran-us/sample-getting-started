@@ -4,10 +4,13 @@ setup:
   image: icr.io/continuous-delivery/pipeline/pipeline-base-ubi:3.12
   script: |
     #!/usr/bin/env bash
+
+    GHE_TOKEN=$(cat "$WORKSPACE/git-token")
+    GHE_TOKEN=$(get_env git-token)
+    
     SKIP_SETUP=$(get_env SKIP_SETUP)
+
     if [[ "$SKIP_SETUP" != 1 ]]; then
-      GHE_TOKEN=$(cat "$WORKSPACE/git-token")
-      GHE_TOKEN=$(get_env git-token)
       GH_TOKEN=$(get_env git-token-GH)
       OWNER=$(jq -r '.services[] | select(.toolchain_binding.name=="app-repo") | .parameters.owner_id' /toolchain/toolchain.json)
       REPO=$(jq -r '.services[] | select(.toolchain_binding.name=="app-repo") | .parameters.repo_name' /toolchain/toolchain.json)
@@ -20,7 +23,7 @@ setup:
       echo "REPO: $REPO"
       echo "BRANCH: $BRANCH"
 
-      #curl -u :$GH_TOKEN https://api.github.com/repos/$OWNER/$REPO/branches/$BRANCH/protection -H "Accept: application/vnd.github.v3+json" -X PUT -d '{"required_pull_request_reviews":{"dismiss_stale_reviews":true,"required_approving_review_count":1},"enforce_admins":null,"restrictions":null,"required_status_checks":null}'
+      curl -u :$GH_TOKEN https://api.github.com/repos/$OWNER/$REPO/branches/$BRANCH/protection -H "Accept: application/vnd.github.v3+json" -X PUT -d '{"required_pull_request_reviews":{"dismiss_stale_reviews":true,"required_approving_review_count":1},"enforce_admins":null,"restrictions":null,"required_status_checks":null}'
     fi  
 
     # clone the cpp-pipelines repo where custom scripts are maintained
